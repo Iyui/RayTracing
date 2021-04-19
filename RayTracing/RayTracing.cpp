@@ -29,6 +29,7 @@ int main() {
 	auto origin = point3(0, 0, 0);
 	auto horizontal = vec3(viewport_width, 0, 0);
 	auto vertical = vec3(0, viewport_height, 0);
+	//视口左下角的坐标
 	auto lower_left_corner = origin - horizontal / 2 - vertical / 2 - vec3(0, 0, focal_length);
 
 	std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
@@ -36,7 +37,10 @@ int main() {
 	for (int j = image_height - 1; j >= 0; --j) {
 		std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;//进度指示器
 		for (int i = 0; i < image_width; ++i) {
-			color pixel_color(double(i) / (image_width - 1), double(j) / (image_height - 1), 0.25);
+			auto u = double(i) / (image_width - 1);
+			auto v = double(j) / (image_height - 1);
+			ray r(origin, lower_left_corner + u * horizontal + v * vertical - origin);
+			color pixel_color = ray_color(r);
 			write_color(std::cout, pixel_color);
 		}
 	}
